@@ -1,15 +1,15 @@
 import React from 'react'
 import { View, Text, Button, StyleSheet } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../redux/store'
 
 const ConfirmationScreen: React.FC = () => {
   const navigation = useNavigation()
   const route = useRoute()
-  const { recipient, amount, transactionId } = route.params as {
-    recipient: string
-    amount: number
-    transactionId: string
-  }
+  const { transactionId, recipient, amount } = useSelector(
+    (state: RootState) => state.transaction,
+  )
 
   return (
     <View style={styles.container}>

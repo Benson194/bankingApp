@@ -9,7 +9,10 @@ export default function HomeScreen() {
       <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
         Welcome to RytBank
       </Text>
-      <Button title="Make a Payment" onPress={() => router.push('payment')} />
+      <Button
+        title="Make a Payment"
+        onPress={() => router.push('/paymentFlow/payment')}
+      />
     </View>
   )
 }

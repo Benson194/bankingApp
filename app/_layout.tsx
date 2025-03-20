@@ -19,10 +19,9 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={useColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ title: 'Home' }} />
-        <Stack.Screen name="payment" options={{ title: 'Payment' }} />
-        <Stack.Screen name="confirmation" options={{ title: 'Confirmation' }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(paymentFlow)" />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

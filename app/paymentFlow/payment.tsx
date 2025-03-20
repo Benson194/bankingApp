@@ -11,10 +11,12 @@ import {
 } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
 import * as Yup from 'yup'
+import { useDispatch } from 'react-redux'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useNavigation } from '@react-navigation/native'
-import { authenticateUser } from '../utils/biometrics'
-import { processTransaction } from '../services/api'
+import { authenticateUser } from '../../utils/biometrics'
+import { processTransaction } from '../../services/api'
+import { transactionSuccess } from '../../redux/slices/transactionSlice'
 
 const accountBalance = 500
 
@@ -39,6 +41,7 @@ const PaymentScreen: React.FC = () => {
   })
 
   const navigation = useNavigation()
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
 
   const onSubmit = async (data: any) => {
@@ -51,11 +54,14 @@ const PaymentScreen: React.FC = () => {
       )
 
       if (response.success) {
-        navigation.navigate('confirmation', {
-          recipient: data.recipient,
-          amount: data.amount,
-          transactionId: response.transactionId,
-        })
+        dispatch(
+          transactionSuccess({
+            transactionId: response.transactionId!,
+            recipient: data.recipient,
+            amount: data.amount,
+          }),
+        )
+        navigation.navigate('confirmation')
       } else {
         Alert.alert(
           'Transaction Failed',
