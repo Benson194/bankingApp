@@ -12,6 +12,7 @@ import {
 import { useForm, Controller } from 'react-hook-form'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { authenticateUser } from '../utils/biometrics';
 
 
 const accountBalance = 500 // Simulated account balance
@@ -40,7 +41,9 @@ const PaymentScreen: React.FC = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false)
 
   const onSubmit = (data: any) => {
-
+        authenticateUser(() => {
+          Alert.alert("Payment Successful", `Sent $${data.amount} to ${data.recipient}`);
+        }, setIsAuthenticating);
   }
 
   return (
@@ -135,13 +138,3 @@ const styles = StyleSheet.create({
 })
 
 export default PaymentScreen
-
-// import { View, Text } from "react-native";
-//
-// export default function PaymentScreen() {
-//   return (
-//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//       <Text>Payment Screen</Text>
-//     </View>
-//   );
-// }
