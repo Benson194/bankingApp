@@ -6,18 +6,18 @@ import {
   Button,
   Alert,
   StyleSheet,
-  KeyboardAvoidingView,
+  ActivityIndicator,
   Platform,
 } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { authenticateUser } from '../utils/biometrics';
+import { useNavigation } from '@react-navigation/native'
+import { authenticateUser } from '../utils/biometrics'
+import { processTransaction } from '../services/api'
 
+const accountBalance = 500
 
-const accountBalance = 500 // Simulated account balance
-
-// Validation schema
 const paymentSchema = Yup.object().shape({
   recipient: Yup.string().required('Recipient is required'),
   amount: Yup.number()
@@ -38,19 +38,37 @@ const PaymentScreen: React.FC = () => {
     defaultValues: { recipient: '', amount: '', note: '' },
   })
 
-  const [isAuthenticating, setIsAuthenticating] = useState(false)
+  const navigation = useNavigation()
+  const [loading, setLoading] = useState(false)
 
-  const onSubmit = (data: any) => {
-        authenticateUser(() => {
-          Alert.alert("Payment Successful", `Sent $${data.amount} to ${data.recipient}`);
-        }, setIsAuthenticating);
+  const onSubmit = async (data: any) => {
+    setLoading(true)
+
+    authenticateUser(async () => {
+      const response = await processTransaction(
+        data.recipient,
+        Number(data.amount),
+      )
+
+      if (response.success) {
+        navigation.navigate('confirmation', {
+          recipient: data.recipient,
+          amount: data.amount,
+          transactionId: response.transactionId,
+        })
+      } else {
+        Alert.alert(
+          'Transaction Failed',
+          response.message || 'Unknown error occurred',
+        )
+      }
+
+      setLoading(false)
+    })
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
+    <View style={styles.container}>
       <Text style={styles.balance}>Balance: ${accountBalance}</Text>
 
       <Text>Recipient</Text>
@@ -60,7 +78,9 @@ const PaymentScreen: React.FC = () => {
         render={({ field: { onChange, value } }) => (
           <TextInput
             style={styles.input}
-            placeholder="Enter recipient" onChangeText={onChange} value={value}
+            placeholder="Enter recipient"
+            onChangeText={onChange}
+            value={value}
           />
         )}
       />
@@ -78,8 +98,8 @@ const PaymentScreen: React.FC = () => {
             placeholder="Enter amount"
             keyboardType="numeric"
             onChangeText={(text) => {
-              const numericValue = text.replace(/[^0-9.]/g, '') // Remove non-numeric characters
-              onChange(numericValue === '' ? '' : Number(numericValue)) // Convert to number
+              const numericValue = text.replace(/[^0-9.]/g, '')
+              onChange(numericValue === '' ? '' : Number(numericValue))
             }}
             value={value ? String(value) : ''}
           />
@@ -89,40 +109,19 @@ const PaymentScreen: React.FC = () => {
         <Text style={styles.error}>{errors.amount.message}</Text>
       )}
 
-      <Text>Note (Optional)</Text>
-      <Controller
-        control={control}
-        name="note"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Enter note"
-            onChangeText={onChange}
-            value={value}
-          />
-        )}
-      />
-
       <Button
         title="Send Payment"
         onPress={handleSubmit(onSubmit)}
-        disabled={isAuthenticating}
+        disabled={loading}
       />
-    </KeyboardAvoidingView>
+      {loading && <ActivityIndicator size="large" color="blue" />}
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f9fa',
-  },
-  balance: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#f8f9fa' },
+  balance: { fontSize: 18, fontWeight: 'bold', marginBottom: 20 },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -130,11 +129,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 5,
   },
-  error: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 10,
-  },
+  error: { color: 'red', fontSize: 12, marginBottom: 10 },
 })
 
 export default PaymentScreen

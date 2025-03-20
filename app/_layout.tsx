@@ -22,6 +22,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="index" options={{ title: 'Home' }} />
         <Stack.Screen name="payment" options={{ title: 'Payment' }} />
+        <Stack.Screen name="confirmation" options={{ title: 'Confirmation' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
