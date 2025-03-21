@@ -1,13 +1,16 @@
-// redux/slices/transactionSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface TransactionState {
-  lastTransactionId?: string
-  recipient?: string
-  amount?: number
+  transactionId: string | null
+  recipient: string | null
+  amount: number | null
 }
 
-const initialState: TransactionState = {}
+const initialState: TransactionState = {
+  transactionId: null,
+  recipient: null,
+  amount: null,
+}
 
 const transactionSlice = createSlice({
   name: 'transaction',
@@ -25,13 +28,8 @@ const transactionSlice = createSlice({
       state.recipient = action.payload.recipient
       state.amount = action.payload.amount
     },
-    resetTransaction: (state) => {
-      state.transactionId = undefined
-      state.recipient = undefined
-      state.amount = undefined
-    },
   },
 })
 
-export const { transactionSuccess, resetTransaction } = transactionSlice.actions
+export const { transactionSuccess } = transactionSlice.actions
 export default transactionSlice.reducer

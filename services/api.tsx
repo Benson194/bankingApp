@@ -6,7 +6,7 @@ export const processTransaction = async (
     setTimeout(() => {
       if (amount > 500) {
         resolve({ success: false, message: 'Insufficient funds' })
-      } else if (Math.random() > 0.8) {
+      } else if (Math.random() > 20) {
         resolve({ success: false, message: 'Network issue, try again' })
       } else {
         resolve({
