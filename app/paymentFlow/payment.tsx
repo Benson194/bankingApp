@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   View,
   Text,
@@ -9,11 +9,12 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   FlatList,
+  BackHandler,
 } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
 import { authenticateUser } from '../../utils/biometrics'
 import { processTransaction } from '../../services/api'
@@ -27,6 +28,8 @@ import { showPinModal } from '../../redux/slices/pinSlice'
 import PinModal from '../../components/PinModal'
 import { deductBalance } from '../../redux/slices/balanceSlice'
 import { addTransactionToHistory } from '../../redux/slices/transactionHistorySlice'
+import { commonStyles } from '../../styles/commonStyles'
+import LoadingOverlay from '../../components/LoadingOverlay'
 
 const PaymentScreen: React.FC = () => {
   const navigation = useNavigation()
@@ -61,6 +64,20 @@ const PaymentScreen: React.FC = () => {
     resolver: yupResolver(getPaymentSchema(balance)),
     defaultValues: { recipient: '', amount: '', note: '' },
   })
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (loading) {
+          return true // prevent user navigate back when payment is initiating
+        }
+        return false
+      }
+      BackHandler.addEventListener('hardwareBackPress', onBackPress)
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+    }, [loading]),
+  )
 
   const handleTransaction = async (data: any) => {
     try {
@@ -138,12 +155,15 @@ const PaymentScreen: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.balance}>Balance: ${balance}</Text>
+    <View style={commonStyles.container}>
+      <Text style={commonStyles.heading1}>Balance: ${balance}</Text>
 
-      <View style={styles.labelContainer}>
-        <Text>Recipient</Text>
-        <TouchableOpacity onPress={fetchContacts} style={styles.iconContainer}>
+      <View style={commonStyles.labelContainer}>
+        <Text style={commonStyles.heading2}>Recipient</Text>
+        <TouchableOpacity
+          onPress={fetchContacts}
+          style={commonStyles.iconContainer}
+        >
           <MaterialIcons name="contacts" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -153,7 +173,7 @@ const PaymentScreen: React.FC = () => {
         name="recipient"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={styles.input}
+            style={commonStyles.input}
             placeholder="Enter recipient"
             onChangeText={onChange}
             value={value}
@@ -161,7 +181,7 @@ const PaymentScreen: React.FC = () => {
         )}
       />
       {errors.recipient && (
-        <Text style={styles.error}>{errors.recipient.message}</Text>
+        <Text style={commonStyles.error}>{errors.recipient.message}</Text>
       )}
 
       <ContactSelector
@@ -170,13 +190,14 @@ const PaymentScreen: React.FC = () => {
         onSelect={(name) => setValue('recipient', name)}
       />
 
-      <Text>Amount</Text>
+      <View style={{ height: 20 }} />
+      <Text style={commonStyles.heading2}>Amount</Text>
       <Controller
         control={control}
         name="amount"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={styles.input}
+            style={commonStyles.input}
             placeholder="Enter amount"
             keyboardType="numeric"
             onChangeText={(text) => {
@@ -188,78 +209,52 @@ const PaymentScreen: React.FC = () => {
         )}
       />
       {errors.amount && (
-        <Text style={styles.error}>{errors.amount.message}</Text>
+        <Text style={commonStyles.error}>{errors.amount.message}</Text>
       )}
+      <View style={{ height: 20 }} />
 
-      <Button
-        title="Send Payment"
+      <TouchableOpacity
+        style={commonStyles.button}
         onPress={handleSubmit(onSubmit)}
         disabled={loading}
-      />
-      {loading && <ActivityIndicator size="large" color="blue" />}
-      <Text style={styles.recentTitle}>Recent Transactions</Text>
-      <FlatList
-        data={recentTransactions}
-        keyExtractor={(item) => item.transactionId}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.transactionItem}
-            onPress={() => {
-              setValue('recipient', item.recipient)
-              setValue('amount', item.amount)
-            }}
-          >
-            <Text style={styles.transactionText}>{item.recipient}</Text>
-            <Text style={styles.transactionAmount}>${item.amount}</Text>
-          </TouchableOpacity>
-        )}
-        style={styles.recentTransactionsContainer}
-      />
+      >
+        <Text style={commonStyles.buttonText}>Send Payment</Text>
+      </TouchableOpacity>
+      <View style={{ height: 20 }} />
 
+      {recentTransactions.length > 0 && (
+        <>
+          <Text style={commonStyles.heading1}>Recent Transactions</Text>
+          <FlatList
+            data={recentTransactions}
+            keyExtractor={(item) => item.transactionId}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.transactionItem}
+                onPress={() => {
+                  setValue('recipient', item.recipient)
+                  setValue('amount', item.amount)
+                }}
+              >
+                <Text style={commonStyles.subheading1}>{item.recipient}</Text>
+                <Text style={commonStyles.subheading1}>${item.amount}</Text>
+              </TouchableOpacity>
+            )}
+            style={styles.recentTransactionsContainer}
+          />
+        </>
+      )}
       <PinModal
         onPinSuccess={() =>
           pendingTransaction && handleTransaction(pendingTransaction)
         }
       />
+      <LoadingOverlay visible={loading} message="Processing..." />
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  labelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 5,
-  },
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f9fa',
-  },
-  balance: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 5,
-  },
-  error: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 10,
-  },
-  recentTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
-  },
   recentTransactionsContainer: {
     flex: 1,
   },
@@ -272,13 +267,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     borderWidth: 1,
     borderColor: '#ccc',
-  },
-  transactionText: {
-    fontSize: 14,
-  },
-  transactionAmount: {
-    fontSize: 14,
-    fontWeight: 'bold',
   },
 })
 

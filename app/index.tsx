@@ -1,5 +1,6 @@
-import { View, Text, Button } from 'react-native'
+import { View, Text, Button, TouchableOpacity } from 'react-native'
 import { useRouter } from 'expo-router'
+import { commonStyles } from '../styles/commonStyles'
 
 export default function HomeScreen() {
   const router = useRouter()
@@ -9,10 +10,13 @@ export default function HomeScreen() {
       <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
         Welcome to RytBank
       </Text>
-      <Button
-        title="Make a Payment"
+      <View style={{ height: 20 }} />
+      <TouchableOpacity
+        style={commonStyles.button}
         onPress={() => router.push('/paymentFlow/payment')}
-      />
+      >
+        <Text style={commonStyles.buttonText}>Make a Payment</Text>
+      </TouchableOpacity>
     </View>
   )
 }

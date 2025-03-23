@@ -8,7 +8,7 @@ export default function PaymentFlowLayout() {
     <Provider store={store}>
       <Stack>
         <Stack.Screen name="payment" options={{ title: 'Payment' }} />
-        <Stack.Screen name="confirmation" options={{ title: 'Confirmation' }} />
+        <Stack.Screen name="confirmation" options={{ headerShown: false }} />
       </Stack>
     </Provider>
   )

@@ -15,16 +15,12 @@ const pinSlice = createSlice({
   initialState,
   reducers: {
     setUserPin: (state, action: PayloadAction<string>) => {
-      console.log('Setting PIN:', action.payload)
       state.pin = action.payload
     },
     showPinModal: (state) => {
-      console.log('Show pin modal:', state)
-
       state.isModalVisible = true
     },
     hidePinModal: (state) => {
-      console.log('Hide pin modal:', state)
       state.isModalVisible = false
     },
   },

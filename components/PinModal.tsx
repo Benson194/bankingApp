@@ -10,6 +10,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../redux/store'
 import { setUserPin, hidePinModal } from '../redux/slices/pinSlice'
+import { commonStyles } from '../styles/commonStyles'
 
 const PinModal: React.FC<{ onPinSuccess: () => void }> = ({ onPinSuccess }) => {
   const dispatch = useDispatch()
@@ -56,12 +57,12 @@ const PinModal: React.FC<{ onPinSuccess: () => void }> = ({ onPinSuccess }) => {
     <Modal visible={isVisible} transparent animationType="slide">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>
+          <Text style={commonStyles.heading1}>
             {pinFromStore ? 'Enter Your PIN' : 'Set Up Your PIN'}
           </Text>
 
           <TextInput
-            style={styles.input}
+            style={commonStyles.input}
             placeholder="Enter 6-digit PIN"
             keyboardType="numeric"
             secureTextEntry
@@ -72,7 +73,7 @@ const PinModal: React.FC<{ onPinSuccess: () => void }> = ({ onPinSuccess }) => {
 
           {!pinFromStore && (
             <TextInput
-              style={styles.input}
+              style={commonStyles.input}
               placeholder="Confirm 6-digit PIN"
               keyboardType="numeric"
               secureTextEntry
@@ -82,10 +83,10 @@ const PinModal: React.FC<{ onPinSuccess: () => void }> = ({ onPinSuccess }) => {
             />
           )}
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-          <TouchableOpacity style={styles.submitButton} onPress={handleSavePin}>
-            <Text style={styles.submitText}>
+          {error ? <Text style={commonStyles.error}>{error}</Text> : null}
+          <View style={{ height: 20 }} />
+          <TouchableOpacity style={commonStyles.button} onPress={handleSavePin}>
+            <Text style={commonStyles.buttonText}>
               {pinFromStore ? 'Submit' : 'Save PIN'}
             </Text>
           </TouchableOpacity>
@@ -108,37 +109,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 5,
-    textAlign: 'center',
-  },
-  errorText: {
-    color: 'red',
-    marginTop: 5,
-    fontSize: 14,
-  },
-  submitButton: {
-    marginTop: 10,
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-    alignItems: 'center',
-  },
-  submitText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
 })
 
