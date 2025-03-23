@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-interface TransactionState {
+export interface TransactionState {
   transactionId: string | null
   recipient: string | null
   amount: number | null

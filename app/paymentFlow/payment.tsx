@@ -26,6 +26,7 @@ import { RootState } from '../../redux/store'
 import { showPinModal } from '../../redux/slices/pinSlice'
 import PinModal from '../../components/PinModal'
 import { deductBalance } from '../../redux/slices/balanceSlice'
+import { addTransactionToHistory } from '../../redux/slices/transactionHistorySlice'
 
 const PaymentScreen: React.FC = () => {
   const navigation = useNavigation()
@@ -36,12 +37,11 @@ const PaymentScreen: React.FC = () => {
   const [pendingTransaction, setPendingTransaction] = useState<any | null>(null)
 
   const contacts = useSelector((state: RootState) => state.contacts.list)
-  const recentTransactions = useSelector(
-    (state: RootState) => state.transaction.recent,
-  )
   const pin = useSelector((state: RootState) => state.pin.pin)
   const balance = useSelector((state: RootState) => state.balance.balance)
-
+  const recentTransactions = useSelector(
+    (state: RootState) => state.transactionHistory.history,
+  )
   const getPaymentSchema = (balance: number) =>
     Yup.object().shape({
       recipient: Yup.string().required('Recipient is required'),
@@ -71,17 +71,14 @@ const PaymentScreen: React.FC = () => {
       )
 
       if (response.success) {
-        console.log('transactionId:', response.transactionId!)
-        console.log('recipient:', data.recipient)
-        console.log('amount:', data.amount)
+        const transactionData = {
+          transactionId: response.transactionId!,
+          recipient: data.recipient,
+          amount: data.amount,
+        }
 
-        dispatch(
-          transactionSuccess({
-            transactionId: response.transactionId!,
-            recipient: data.recipient,
-            amount: data.amount,
-          }),
-        )
+        dispatch(transactionSuccess(transactionData))
+        dispatch(addTransactionToHistory(transactionData))
         dispatch(deductBalance(Number(data.amount)))
 
         navigation.navigate('confirmation')
@@ -200,6 +197,24 @@ const PaymentScreen: React.FC = () => {
         disabled={loading}
       />
       {loading && <ActivityIndicator size="large" color="blue" />}
+      <Text style={styles.recentTitle}>Recent Transactions</Text>
+      <FlatList
+        data={recentTransactions}
+        keyExtractor={(item) => item.transactionId}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.transactionItem}
+            onPress={() => {
+              setValue('recipient', item.recipient)
+              setValue('amount', item.amount)
+            }}
+          >
+            <Text style={styles.transactionText}>{item.recipient}</Text>
+            <Text style={styles.transactionAmount}>${item.amount}</Text>
+          </TouchableOpacity>
+        )}
+        style={styles.recentTransactionsContainer}
+      />
 
       <PinModal
         onPinSuccess={() =>
@@ -245,8 +260,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
-  recentContainer: {
-    maxHeight: 200,
+  recentTransactionsContainer: {
+    flex: 1,
   },
   transactionItem: {
     flexDirection: 'row',
