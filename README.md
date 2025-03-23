@@ -6,7 +6,7 @@ This is a React Native payment application that allows users to send money secur
 
 ## 🎥 Demo video
 
-https://drive.google.com/file/d/1HSWY16gfbGea_zKFKMdMD_h4_QjB4a2L/view?usp=sharing
+https://drive.google.com/file/d/1efj-xn3yXo2AjfbM-trX5VzZ_FHt0vve/view?usp=sharing
 
 ## 📌 Setup Instructions
 

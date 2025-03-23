@@ -8,7 +8,7 @@ export default function HomeScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-        Welcome to RytBank
+        Welcome to Ryt Bank
       </Text>
       <View style={{ height: 20 }} />
       <TouchableOpacity

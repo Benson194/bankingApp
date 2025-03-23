@@ -13,9 +13,10 @@ import {
 } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
 import * as Yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useRouter } from 'expo-router'
 import { useDispatch, useSelector } from 'react-redux'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useFocusEffect } from '@react-navigation/native'
 import { authenticateUser } from '../../utils/biometrics'
 import { processTransaction } from '../../services/api'
 import { transactionSuccess } from '../../redux/slices/transactionSlice'
@@ -32,13 +33,12 @@ import { commonStyles } from '../../styles/commonStyles'
 import LoadingOverlay from '../../components/LoadingOverlay'
 
 const PaymentScreen: React.FC = () => {
-  const navigation = useNavigation()
+  const router = useRouter()
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [pinModalVisible, setPinModalVisible] = useState(false)
   const [pendingTransaction, setPendingTransaction] = useState<any | null>(null)
-
   const contacts = useSelector((state: RootState) => state.contacts.list)
   const pin = useSelector((state: RootState) => state.pin.pin)
   const balance = useSelector((state: RootState) => state.balance.balance)
@@ -98,7 +98,7 @@ const PaymentScreen: React.FC = () => {
         dispatch(addTransactionToHistory(transactionData))
         dispatch(deductBalance(Number(data.amount)))
 
-        navigation.navigate('confirmation')
+        router.replace('/paymentFlow/confirmation')
       } else {
         Alert.alert(
           'Transaction Failed',

@@ -7,13 +7,14 @@ import {
   TouchableOpacity,
   BackHandler,
 } from 'react-native'
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
 import { commonStyles } from '../../styles/commonStyles'
 
 const ConfirmationScreen: React.FC = () => {
-  const navigation = useNavigation()
+  const router = useRouter()
   const transaction = useSelector((state: RootState) => state.transaction)
 
   useFocusEffect(
@@ -46,12 +47,7 @@ const ConfirmationScreen: React.FC = () => {
       <View style={{ height: 20 }} />
       <TouchableOpacity
         style={commonStyles.button}
-        onPress={() =>
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'index' }],
-          })
-        }
+        onPress={() => router.replace('/')}
       >
         <Text style={commonStyles.buttonText}>Back to home</Text>
       </TouchableOpacity>

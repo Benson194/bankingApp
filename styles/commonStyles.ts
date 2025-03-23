@@ -1,52 +1,61 @@
 import { StyleSheet } from 'react-native'
+import { theme } from './theme'
 
 export const commonStyles = StyleSheet.create({
+  /** Layout **/
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f9fa',
+    padding: theme.spacing.large,
+    backgroundColor: theme.colors.background,
   },
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 5,
+    marginBottom: theme.spacing.small,
   },
+
+  /** Typography **/
   heading1: {
-    fontSize: 18,
+    fontSize: theme.fontSize.large,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: theme.spacing.large,
   },
   heading2: {
-    fontSize: 16,
+    fontSize: theme.fontSize.medium,
+    fontWeight: '600',
   },
   subheading1: {
-    fontSize: 16,
+    fontSize: theme.fontSize.medium,
   },
+  errorText: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.error,
+    marginBottom: theme.spacing.medium,
+  },
+
+  /** Input Fields **/
   input: {
     width: '100%',
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 12,
-    marginVertical: 5,
-    borderRadius: 10,
-    backgroundColor: '#fff',
+    borderColor: theme.colors.border,
+    padding: theme.spacing.medium,
+    marginVertical: theme.spacing.small,
+    borderRadius: theme.borderRadius.small,
+    backgroundColor: theme.colors.white,
   },
-  error: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 10,
-  },
+
+  /** Buttons **/
   button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
+    backgroundColor: theme.colors.primary,
+    paddingVertical: theme.spacing.medium,
+    paddingHorizontal: theme.spacing.large,
+    borderRadius: theme.borderRadius.large,
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
-    fontSize: 16,
+    color: theme.colors.white,
+    fontSize: theme.fontSize.medium,
     fontWeight: 'bold',
   },
 })

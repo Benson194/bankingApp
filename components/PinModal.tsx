@@ -68,7 +68,7 @@ const PinModal: React.FC<{ onPinSuccess: () => void }> = ({ onPinSuccess }) => {
             secureTextEntry
             maxLength={6}
             value={pin}
-            onChangeText={setPin}
+            onChangeText={(text) => setPin(text.replace(/[^0-9]/g, ''))}
           />
 
           {!pinFromStore && (
@@ -79,7 +79,9 @@ const PinModal: React.FC<{ onPinSuccess: () => void }> = ({ onPinSuccess }) => {
               secureTextEntry
               maxLength={6}
               value={confirmPin}
-              onChangeText={setConfirmPin}
+              onChangeText={(text) =>
+                setConfirmPin(text.replace(/[^0-9]/g, ''))
+              }
             />
           )}
 
